@@ -1,0 +1,18 @@
+__pycache__
+*.pyc
+*.log
+.env
+swimmy_env
+
+
+
+# Visual Studio Code # 
+.vscode/* 
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+.history
+
+# Db
+db.sqlite3
