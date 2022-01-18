@@ -4,7 +4,7 @@ from rest_framework import status
 from customuser.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Pool
+from .models import Booking, Pool
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -48,4 +48,25 @@ class PoolSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'slug'},
             'slug': {'read_only': True},
+        }
+
+
+class BookingSerializer(serializers.HyperlinkedModelSerializer):
+    pool_name = serializers.ReadOnlyField(source='pool.name')
+    pool = serializers.HyperlinkedRelatedField(view_name="pool-detail",
+                                               lookup_field='slug',
+                                               queryset=Pool.objects.all())
+    user_name = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Booking
+        fields = ['id', 'url', 'total_amount', 'start_datetime',
+                  'end_datetime', 'slug', 'created_at',
+                  'pool_name', 'pool', 'user_name', 'user'
+                  ]
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'},
+            'slug': {'read_only': True},
+            'total_amount': {'read_only': True}
         }
