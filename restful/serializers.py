@@ -4,6 +4,7 @@ from rest_framework import status
 from customuser.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import Pool
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,3 +34,18 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
                         'id': self.user.id,
                         }
         return data
+
+
+class PoolSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Pool
+        fields = ['url', 'id', 'name', 'location',
+                  'day_price', 'thumbnail_url',
+                  'image_url', 'width', 'length', 'depth_shallow_end',
+                  'depth_deep_end', 'maximum_people', 'slug', 'created_at'
+                  ]
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'},
+            'slug': {'read_only': True},
+        }
