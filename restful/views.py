@@ -58,20 +58,15 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class PoolViewSet(viewsets.ModelViewSet):
     """
     Only Admins can create, delete, or update a pool
+    Any other person can list and retrieve a pool
     """
     queryset = Pool.objects.all().order_by('-created_at')
     serializer_class = PoolSerializer
     lookup_field = 'slug'
 
     def get_permissions(self):
-        """
-        Instantiates and returns the list of
-        permissions that this view requires.
-        """
-        if self.action == 'create' \
-            or self.action == 'update' \
-            or self.action == 'partial_update' \
-                or self.action == 'destroy':
+        if self.action in ['create', 'update',
+                           'partial_update', 'destroy']:
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
@@ -88,7 +83,8 @@ class PoolViewSet(viewsets.ModelViewSet):
 class BookingViewSet(viewsets.ModelViewSet):
     """
     Only admin can list all bookings
-    Authenticated user can create, update, destroy, retreive their booking
+    Authenticated user can create a booking, update, destroy, retreive
+    only their booking
     Authenticated user can view all their bookings
     """
     serializer_class = BookingSerializer
