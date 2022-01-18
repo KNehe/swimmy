@@ -9,7 +9,7 @@ class Pool(models.Model):
     """
     Defines the attributes and database fields of a swimming pool
     """
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     location = models.CharField(max_length=100)
     day_price = models.DecimalField(decimal_places=1, max_digits=3)
     thumbnail_url = models.URLField(max_length=300, null=True, blank=True)
@@ -24,8 +24,8 @@ class Pool(models.Model):
                                    related_name='related_by_user')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
-                                   related_name='updated_by_user')
-    updated_at = models.DateTimeField(auto_now=True)
+                                   related_name='updated_by_user', blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -37,7 +37,8 @@ class Pool(models.Model):
 
 class Booking(models.Model):
     """
-    Defines attributes and database fields contained by a booking of a swimming pool by a user
+    Defines attributes and database fields contained
+    by a booking of a swimming pool by a user
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='booked_by_user')
@@ -67,8 +68,8 @@ class Booking(models.Model):
 
 
 class Rating(models.Model):
-    """W
-    Defines attributes and database fields of a swimming pool's rating by a user
+    """Defines attributes and database fields of a
+       swimming pool's rating by a user
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE,
