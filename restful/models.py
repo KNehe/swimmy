@@ -43,18 +43,19 @@ class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='booked_by_user')
     pool = models.ForeignKey(Pool, on_delete=models.CASCADE,
-                             related_name='booked_swimming_pool')
+                             related_name='booked_swimming_pools')
     # total_amount = day price * number of days(start day - end day)
     # It should be auto-calculated as shown below in save() method
     total_amount = models.DecimalField(decimal_places=2, max_digits=5,
                                        blank=True)
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
-    slug = models.SlugField(max_length=100, blank=True)
+    slug = models.SlugField(max_length=100, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
-                                   related_name='booking_updated_by')
-    updated_at = models.DateTimeField(auto_now=True)
+                                   related_name='booking_updated_by',
+                                   blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f'Booked by {self.user}'
