@@ -1,5 +1,6 @@
-from django.http import request
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -118,7 +119,21 @@ class BookingViewSet(viewsets.ModelViewSet):
         else:
             return super().handle_exception(exc)
 
-    # TODO fetch all Bookings by particular user
+    @action(detail=False, permission_classes=[IsBookingOwner])
+    def recent_bookings(self, request):
+        if type(request.user) == AnonymousUser:
+            return Response({'detail': 'User not known'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        recent_bookings = Booking.objects.filter(user=request.user)\
+            .order_by('-created_at')
+
+        page = self.paginate_queryset(recent_bookings)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(recent_bookings, many=True)
+        return Response(serializer.data)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
