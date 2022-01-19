@@ -104,7 +104,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer.save(updated_by=self.request.user,
                         updated_at=timezone.now())
 
-    # TODO validate start and end datetime on create()
     # TODO fetch all Bookings by particular user
 
 

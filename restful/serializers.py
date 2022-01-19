@@ -5,6 +5,7 @@ from customuser.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Booking, Pool
+from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,4 +70,29 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
             'url': {'lookup_field': 'slug'},
             'slug': {'read_only': True},
             'total_amount': {'read_only': True}
-        }
+            }
+
+    def validate_start_datetime(self, value):
+        """
+        Check if start_datetime is not past
+        """
+        if value < timezone.now():
+            raise serializers.ValidationError('Start date can not be past')
+        return value
+
+    def validate_end_datetime(self, value):
+        """
+        Check if end_datetime is not past
+        """
+        if value < timezone.now():
+            raise serializers.ValidationError('Start date can not be past')
+        return value
+
+    def validate(self, attrs):
+        """
+        Check if start_datetime is not > end_datetime
+        """
+        if attrs['start_datetime'] > attrs['end_datetime']:
+            error = 'Start date must be less than or equal to end date'
+            raise serializers.ValidationError(f'{error}')
+        return attrs
