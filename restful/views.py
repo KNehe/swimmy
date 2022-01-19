@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from customuser.models import User
 
 from django.utils import timezone
+from django.db import IntegrityError
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -103,6 +104,19 @@ class BookingViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(updated_by=self.request.user,
                         updated_at=timezone.now())
+
+    def handle_exception(self, exc):
+        """
+        Handle Integrity error when user tries to create
+        same booking. Slug unique constraint will fail
+        """
+        if isinstance(exc, IntegrityError):
+            error = 'You have already booked this pool.' + \
+                    'Request an update if required'
+            error = {"Integrity error": error}
+            return Response(error, status.HTTP_400_BAD_REQUEST)
+        else:
+            return super().handle_exception(exc)
 
     # TODO fetch all Bookings by particular user
 
