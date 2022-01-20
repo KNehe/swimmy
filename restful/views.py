@@ -5,9 +5,9 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from restful.models import Booking, Pool
+from restful.models import Booking, Pool, Rating
 from restful.permissions import IsOwner
-from .serializers import PoolSerializer, UserSerializer,\
+from .serializers import PoolSerializer, RatingSerializer, UserSerializer,\
                          MyTokenObtainPairSerializer,\
                          BookingSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -149,3 +149,31 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+
+class RatingViewSet(viewsets.ModelViewSet):
+    serializer_class = RatingSerializer
+    queryset = Rating.objects.all().order_by('-created_at')
+    lookup_field = 'slug'
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsAuthenticated]
+        if self.action == 'list':
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [IsOwner]
+        return [permission() for permission in permission_classes]
+
+    def handle_exception(self, exc):
+        """
+        Handle exception when user attempts to recreate
+        a rating
+        Should request update from existing rating
+        """
+        if isinstance(exc, IntegrityError):
+            error = 'Already rated! request update to make changes'
+            error = {'Integrity Error': error}
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return super().handle_exception(exc)

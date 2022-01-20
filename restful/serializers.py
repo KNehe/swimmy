@@ -4,7 +4,7 @@ from rest_framework import status
 from customuser.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Booking, Pool
+from .models import Booking, Pool, Rating
 from django.utils import timezone
 
 
@@ -96,3 +96,18 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
             error = 'Start date must be less than or equal to end date'
             raise serializers.ValidationError(f'{error}')
         return attrs
+
+
+class RatingSerializer(serializers.HyperlinkedModelSerializer):
+    pool = serializers.HyperlinkedRelatedField(view_name='pool-detail',
+                                               lookup_field='slug',
+                                               queryset=Pool.objects.all())
+
+    class Meta:
+        model = Rating
+        fields = ['url', 'user', 'pool', 'value', 'slug', 'created_at']
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'slug': {'read_only': True},
+            'url': {'lookup_field': 'slug'}
+        }

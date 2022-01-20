@@ -80,10 +80,9 @@ class Rating(models.Model):
     value = models.DecimalField(decimal_places=1, max_digits=2,
                                 validators=[MinValueValidator(0.0),
                                             MaxValueValidator(5.0)])
-    slug = models.SlugField(max_length=100, blank=True)
+    slug = models.SlugField(max_length=100, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE,
-                                   related_name='rating_updated_by')
+    updated_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f'Rated by: {self.user}'
