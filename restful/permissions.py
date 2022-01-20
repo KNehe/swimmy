@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class IsBookingOwner(permissions.BasePermission):
+class IsOwner(permissions.BasePermission):
     """
     Object-level permission to only allow owners of a booking to edit it.
     """
