@@ -172,8 +172,14 @@ class RatingViewSet(viewsets.ModelViewSet):
             permission_classes = [IsOwner]
         return [permission() for permission in permission_classes]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     @action(detail=False, permission_classes=[IsOwner])
     def user_ratings(self, request):
+        """
+        Get all ratings made by a user
+        """
         if not request.user or type(request.user) == AnonymousUser:
             return Response({'detail': 'User not known'},
                             status=status.HTTP_401_UNAUTHORIZED)
