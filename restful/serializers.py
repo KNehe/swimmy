@@ -115,5 +115,6 @@ class RatingSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field = 'slug'
         extra_kwargs = {
             'slug': {'read_only': True},
-            'url': {'lookup_field': 'slug'}
+            'url': {'lookup_field': 'slug'},
+            'user': {'read_only': True}
         }
