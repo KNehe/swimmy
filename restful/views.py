@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from restful.models import Booking, Pool
-from restful.permissions import IsBookingOwner
+from restful.permissions import IsOwner
 from .serializers import PoolSerializer, UserSerializer,\
                          MyTokenObtainPairSerializer,\
                          BookingSerializer
@@ -99,7 +99,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         elif self.action == 'create':
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsBookingOwner]
+            permission_classes = [IsOwner]
         return [permission() for permission in permission_classes]
 
     def perform_update(self, serializer):
@@ -119,7 +119,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         else:
             return super().handle_exception(exc)
 
-    @action(detail=False, permission_classes=[IsBookingOwner])
+    @action(detail=False, permission_classes=[IsOwner])
     def recent_bookings(self, request):
         if type(request.user) == AnonymousUser:
             return Response({'detail': 'User not known'},
