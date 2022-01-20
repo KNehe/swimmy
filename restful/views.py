@@ -129,9 +129,11 @@ class BookingViewSet(viewsets.ModelViewSet):
             .order_by('-created_at')
 
         page = self.paginate_queryset(recent_bookings)
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(recent_bookings, many=True)
         return Response(serializer.data)
 
@@ -164,6 +166,23 @@ class RatingViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsOwner]
         return [permission() for permission in permission_classes]
+
+    @action(detail=False, permission_classes=[IsOwner])
+    def user_ratings(self, request):
+        if not request.user or type(request.user) == AnonymousUser:
+            return Response({'detail': 'User not known'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        user_ratings = Rating.objects.filter(user=request.user)\
+                                     .order_by('-created_at')
+
+        page = self.paginate_queryset(user_ratings)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return Response(serializer.data)
+
+        serializer = self.get_serializer(user_ratings, many=True)
+        return Response(serializer.data)
 
     def handle_exception(self, exc):
         """
