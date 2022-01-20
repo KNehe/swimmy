@@ -16,6 +16,7 @@ from customuser.models import User
 
 from django.utils import timezone
 from django.db import IntegrityError
+from django.db.models import Avg
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -62,9 +63,13 @@ class PoolViewSet(viewsets.ModelViewSet):
     Only Admins can create, delete, or update a pool
     Any other person can list and retrieve a pool
     """
-    queryset = Pool.objects.all().order_by('-created_at')
     serializer_class = PoolSerializer
     lookup_field = 'slug'
+
+    def get_queryset(self):
+        return Pool.objects.all().\
+               annotate(_average_value=Avg('rating__value')).\
+               order_by('-created_at')
 
     def get_permissions(self):
         if self.action in ['create', 'update',

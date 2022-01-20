@@ -38,12 +38,18 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class PoolSerializer(serializers.HyperlinkedModelSerializer):
+    average_rating = serializers.SerializerMethodField()
+
+    def get_average_rating(self, obj):
+        return obj.average_rating
+
     class Meta:
         model = Pool
         fields = ['url', 'id', 'name', 'location',
                   'day_price', 'thumbnail_url',
                   'image_url', 'width', 'length', 'depth_shallow_end',
-                  'depth_deep_end', 'maximum_people', 'slug', 'created_at'
+                  'depth_deep_end', 'maximum_people', 'slug', 'created_at',
+                  'average_rating'
                   ]
         lookup_field = 'slug'
         extra_kwargs = {

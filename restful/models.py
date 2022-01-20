@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Avg
 
 from customuser.models import User
 
@@ -33,6 +34,12 @@ class Pool(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Pool, self).save(*args, **kwargs)
+
+    @property
+    def average_rating(self):
+        if hasattr(self, '_average_value'):
+            return self._average_value
+        return self.rating.aggregate(Avg('value'))
 
 
 class Booking(models.Model):
@@ -76,7 +83,7 @@ class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='rated_by')
     pool = models.ForeignKey(Pool, on_delete=models.CASCADE,
-                             related_name='swimming_pool')
+                             related_name='rating')
     value = models.DecimalField(decimal_places=1, max_digits=2,
                                 validators=[MinValueValidator(0.0),
                                             MaxValueValidator(5.0)])
