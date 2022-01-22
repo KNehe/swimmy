@@ -97,3 +97,13 @@ class Rating(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(f'{self.pool} rated by {self.user}')
         super(Rating, self).save(*args, **kwargs)
+
+
+class FileUpload(models.Model):
+    file_name = models.CharField(max_length=50)
+    file = models.FileField(upload_to='media/')
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'{self.file_name}'

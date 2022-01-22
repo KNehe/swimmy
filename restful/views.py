@@ -4,14 +4,18 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import views
+from rest_framework.parsers import MultiPartParser, FormParser
 
-from restful.models import Booking, Pool, Rating
+from restful.models import Booking, FileUpload, Pool, Rating
 from restful.permissions import IsOwner
-from .serializers import PoolSerializer, RatingSerializer, UserSerializer,\
+from .serializers import FileUploadSerializer, PoolSerializer,\
+                         RatingSerializer, UserSerializer,\
                          MyTokenObtainPairSerializer,\
                          BookingSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+
 from customuser.models import User
 
 from django.utils import timezone
@@ -207,3 +211,10 @@ class RatingViewSet(viewsets.ModelViewSet):
             return Response(error, status=status.HTTP_400_BAD_REQUEST)
         else:
             return super().handle_exception(exc)
+
+
+class FileUploadView(viewsets.ModelViewSet):
+    queryset = FileUpload.objects.all().order_by('-uploaded_at')
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+    serializer_class = FileUploadSerializer
