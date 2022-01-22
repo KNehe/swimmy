@@ -4,7 +4,7 @@ from rest_framework import status
 from customuser.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Booking, Pool, Rating
+from .models import Booking, FileUpload, Pool, Rating
 from django.utils import timezone
 
 
@@ -118,3 +118,9 @@ class RatingSerializer(serializers.HyperlinkedModelSerializer):
             'url': {'lookup_field': 'slug'},
             'user': {'read_only': True}
         }
+
+
+class FileUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FileUpload
+        fields = ['id', 'file_name', 'file', 'uploaded_at']
