@@ -1,16 +1,21 @@
+from email import message
+import email
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import views
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import api_view
+from sqlparse import tokens
+from django.core.mail import send_mail
 
 from restful.models import Booking, FileUpload, Pool, Rating
 from restful.permissions import IsOwner
 from .serializers import FileUploadSerializer, PoolSerializer,\
-                         RatingSerializer, UserSerializer,\
+                         RatingSerializer, ResetPasswordConfirmSerializer,\
+                         ResetPasswordRequestSerializer, UserSerializer,\
                          MyTokenObtainPairSerializer,\
                          BookingSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,6 +26,10 @@ from customuser.models import User
 from django.utils import timezone
 from django.db import IntegrityError
 from django.db.models import Avg
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.conf import settings
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -218,3 +227,68 @@ class FileUploadView(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = FileUploadSerializer
+
+
+@api_view(['POST'])
+def reset_password_request_view(request):
+    serializer = ResetPasswordRequestSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    email = serializer.data.get('email')
+
+    user = User.objects.get(email=email)
+
+    uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+
+    token = PasswordResetTokenGenerator().make_token(user)
+
+    reset_link = f'{settings.FRONTEND_URL}/{uidb64}/{token}/'
+
+    body = 'Please use the link below to reset your password \n' + \
+           f'{reset_link} \n' + \
+           'If you did not request this, please ignore this email'
+
+    try:
+        send_mail('Swimmy App Reset Password',
+                  body, settings.FROM_EMAIL, [email])
+    except Exception as e:
+        print(f'SEND RESET PASSWORD EMAIL ERROR: {e}')
+        message = {"message": "An error occurred, try again later"}
+        return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    message = {"message": "We sent a reset password link to your email"}
+
+    return Response(message, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def reset_password_confirm_view(request, **kwargs):
+    serializer = ResetPasswordConfirmSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    uidb64 = kwargs.get('uidb64')
+    token = kwargs.get('token')
+
+    if not uidb64 or not token:
+        message = {'message': 'Invalid request'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+    uid = urlsafe_base64_decode(uidb64)
+
+    user = User.objects.filter(pk=uid)
+    if not user or not user[0]:
+        message = {'message': 'Request for unknown user'}
+        return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+    is_token_valid = PasswordResetTokenGenerator().check_token(user[0], token)
+
+    if not is_token_valid:
+        message = {'message': 'Reset link is now invalid'}
+        return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+    new_password = serializer.data.get('new_password')
+    user[0].set_password(new_password)
+    user[0].save()
+
+    message = {'message': 'Password successfully changed'}
+    return Response(message, status=status.HTTP_200_OK)

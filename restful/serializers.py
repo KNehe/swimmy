@@ -124,3 +124,16 @@ class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileUpload
         fields = ['id', 'file_name', 'file', 'uploaded_at']
+
+
+class ResetPasswordRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate(self, attr):
+        if not User.objects.filter(email=attr['email']).exists():
+            raise serializers.ValidationError('User for email not found')
+        return attr
+
+
+class ResetPasswordConfirmSerializer(serializers.Serializer):
+    new_password = serializers.CharField()

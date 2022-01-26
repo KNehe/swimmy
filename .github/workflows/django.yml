@@ -20,6 +20,12 @@ jobs:
       AWS_QUERYSTRING_AUTH: ${{ secrets.AWS_QUERYSTRING_AUTH }}
       AWS_S3_SIGNATURE_VERSION: ${{ secrets.AWS_S3_SIGNATURE_VERSION }}
       AWS_S3_REGION_NAME: ${{ secrets.AWS_S3_REGION_NAME }}
+      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+      FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_USE_TLS: ${{ secrets.EMAIL_USE_TLS }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
     strategy:
       max-parallel: 4
       matrix:
