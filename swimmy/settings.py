@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'restful.apps.RestfulConfig',
     'customuser.apps.CustomuserConfig',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -162,14 +163,24 @@ AWS_S3_SIGNATURE_VERSION = env('AWS_S3_SIGNATURE_VERSION')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
 
 # PASSWORD_RESET
-FRONTEND_URL=env('FRONTEND_URL')
+FRONTEND_URL = env('FRONTEND_URL')
 PASSWORD_RESET_TIMEOUT = 60*60*24
 
-#SEND_GRID
+# SEND_GRID
 FROM_EMAIL = env('FROM_EMAIL')
 SENDGRID_API_KEY = env('SENDGRID_API_KEY')
 EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
+EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
 EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
