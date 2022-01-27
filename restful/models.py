@@ -39,7 +39,7 @@ class Pool(models.Model):
     def average_rating(self):
         if hasattr(self, '_average_value'):
             return self._average_value
-        return self.rating.aggregate(Avg('value'))
+        return self.rating.aggregate(Avg('value'))['value__avg']
 
 
 class Booking(models.Model):
