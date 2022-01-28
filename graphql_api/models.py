@@ -1,0 +1,1 @@
+from restful.models import *
