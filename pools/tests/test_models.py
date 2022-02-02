@@ -1,4 +1,3 @@
-from tkinter import E
 from django.test import TestCase
 from django.utils import timezone
 

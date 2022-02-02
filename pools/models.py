@@ -30,7 +30,7 @@ class Pool(models.Model):
     depth_shallow_end = models.DecimalField(decimal_places=1, max_digits=2)
     depth_deep_end = models.DecimalField(decimal_places=1, max_digits=2)
     maximum_people = models.IntegerField()
-    slug = models.SlugField(max_length=100, blank=True)
+    slug = models.SlugField(max_length=120, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,
                                    related_name='related_by_user')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -63,14 +63,14 @@ class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='booked_by_user')
     pool = models.ForeignKey(Pool, on_delete=models.CASCADE,
-                             related_name='booked_swimming_pools')
+                             related_name='booked_swimming_pool')
     # total_amount = day price * number of days(start day - end day)
     # It should be auto-calculated as shown below in save() method
     total_amount = models.DecimalField(decimal_places=2, max_digits=5,
                                        blank=True)
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
-    slug = models.SlugField(max_length=100, blank=True, unique=True)
+    slug = models.SlugField(max_length=120, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
                                    related_name='booking_updated_by',
@@ -106,7 +106,7 @@ class Rating(models.Model):
     value = models.DecimalField(decimal_places=1, max_digits=2,
                                 validators=[MinValueValidator(0.0),
                                             MaxValueValidator(5.0)])
-    slug = models.SlugField(max_length=100, blank=True, unique=True)
+    slug = models.SlugField(max_length=120, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 
