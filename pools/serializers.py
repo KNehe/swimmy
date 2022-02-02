@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from rest_framework import status
 
-from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from pools.errors import END_DATE_PAST_ERROR, START_DATE_ERROR,\
+    START_DATE_PAST_ERROR, USER_FOR_EMAIL_NOT_FOUND_ERROR
+
+from pools.helpers import modify_token_obtain_pair_serializer_data
 from .models import Booking, FileUpload, Pool, Rating, User
 from django.utils import timezone
 
@@ -13,35 +15,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}, }
 
-    def create(self, validated_data):
-        return User.objects.create(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            password=make_password(validated_data['password'])
-        )
-
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        refresh = self.get_token(self.user)
-        data['status'] = status.HTTP_200_OK
-        data['message'] = 'Request successfull'
-        data['refresh'] = str(refresh)
-        data['access'] = str(refresh.access_token)
-        data['user'] = {'username': self.user.username,
-                        'email': self.user.email,
-                        'id': self.user.id,
-                        }
+
+        data = modify_token_obtain_pair_serializer_data(data, self)
+
         return data
 
 
 class PoolSerializer(serializers.HyperlinkedModelSerializer):
-    average_rating = serializers.SerializerMethodField()
-
-    def get_average_rating(self, obj):
-        return obj.average_rating
-
     class Meta:
         model = Pool
         fields = ['url', 'id', 'name', 'location',
@@ -82,7 +66,7 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
         Check if start_datetime is not past
         """
         if value < timezone.now():
-            raise serializers.ValidationError('Start date can not be past')
+            raise serializers.ValidationError(START_DATE_PAST_ERROR)
         return value
 
     def validate_end_datetime(self, value):
@@ -90,7 +74,7 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
         Check if end_datetime is not past
         """
         if value < timezone.now():
-            raise serializers.ValidationError('Start date can not be past')
+            raise serializers.ValidationError(END_DATE_PAST_ERROR)
         return value
 
     def validate(self, attrs):
@@ -98,8 +82,7 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
         Check if start_datetime is not > end_datetime
         """
         if attrs['start_datetime'] > attrs['end_datetime']:
-            error = 'Start date must be less than or equal to end date'
-            raise serializers.ValidationError(f'{error}')
+            raise serializers.ValidationError(START_DATE_ERROR)
         return attrs
 
 
@@ -130,7 +113,7 @@ class ResetPasswordRequestSerializer(serializers.Serializer):
 
     def validate(self, attr):
         if not User.objects.filter(email=attr['email']).exists():
-            raise serializers.ValidationError('User for email not found')
+            raise serializers.ValidationError(USER_FOR_EMAIL_NOT_FOUND_ERROR)
         return attr
 
 
