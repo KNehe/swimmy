@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view
 from django.core.mail import send_mail
 
-from pools.models import Booking, FileUpload, Pool, Rating
+from pools.models import Booking, FileUpload, Pool, Rating, User
 from pools.permissions import IsOwner
 from .serializers import FileUploadSerializer, PoolSerializer,\
                          RatingSerializer, ResetPasswordConfirmSerializer,\
@@ -17,8 +17,6 @@ from .serializers import FileUploadSerializer, PoolSerializer,\
                          BookingSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from customuser.models import User
 
 from django.utils import timezone
 from django.db import IntegrityError

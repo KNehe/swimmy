@@ -1,10 +1,9 @@
 from rest_framework import serializers
 from rest_framework import status
 
-from customuser.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Booking, FileUpload, Pool, Rating
+from .models import Booking, FileUpload, Pool, Rating, User
 from django.utils import timezone
 
 

@@ -52,7 +52,7 @@
     }
 },
 {
-    "model": "customuser.user",
+    "model": "pools.user",
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$260000$o19RZmChXOnl9SiIw3JPRd$tyoCXnwgTHs5u0oPUoe/MDciwNs3eHsAwUt2kDFOD/8=",
@@ -70,7 +70,7 @@
     }
 },
 {
-    "model": "customuser.user",
+    "model": "pools.user",
     "pk": 2,
     "fields": {
         "password": "pbkdf2_sha256$260000$LBgRSydwhoADImYHsDtVmV$Cv7Q9LzkJ4WFkXWPd/1BtuaBGhVdyCpNOIiSs70PJnY=",

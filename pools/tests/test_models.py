@@ -4,8 +4,7 @@ from django.utils import timezone
 
 from datetime import timedelta
 
-from customuser.models import User
-from pools.models import Booking, Pool
+from pools.models import Booking, Pool, User
 
 
 def create_test_user(email='nehe@gmail.com'):
