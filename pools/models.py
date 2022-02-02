@@ -43,7 +43,7 @@ class Pool(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Pool, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def average_rating(self):
@@ -82,7 +82,7 @@ class Booking(models.Model):
         self.total_amount = number_of_days * self.pool.day_price\
             if number_of_days > 0 else self.pool.day_price
         self.slug = slugify(f'{self.pool} booked by {self.user}')
-        super(Booking, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Rating(models.Model):
@@ -106,7 +106,7 @@ class Rating(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(f'{self.pool} rated by {self.user}')
-        super(Rating, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class FileUpload(models.Model):
