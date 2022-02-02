@@ -20,6 +20,6 @@ base_url = 'api/v1/'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(f'{base_url}', include('restful.urls')),
+    path(f'{base_url}', include('pools.urls')),
     path('api-auth/', include('rest_framework.urls'))
 ]

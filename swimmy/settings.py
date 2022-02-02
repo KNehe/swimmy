@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'restful.apps.RestfulConfig',
+    'pools.apps.PoolsConfig',
     'customuser.apps.CustomuserConfig',
     'rest_framework_simplejwt',
     'drf_yasg',

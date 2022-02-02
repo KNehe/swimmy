@@ -1,5 +1,3 @@
-from email import message
-import email
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
@@ -8,11 +6,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view
-from sqlparse import tokens
 from django.core.mail import send_mail
 
-from restful.models import Booking, FileUpload, Pool, Rating
-from restful.permissions import IsOwner
+from pools.models import Booking, FileUpload, Pool, Rating
+from pools.permissions import IsOwner
 from .serializers import FileUploadSerializer, PoolSerializer,\
                          RatingSerializer, ResetPasswordConfirmSerializer,\
                          ResetPasswordRequestSerializer, UserSerializer,\
