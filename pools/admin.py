@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from restful.models import Booking, FileUpload, Pool, Rating
+from pools.models import Booking, FileUpload, Pool, Rating
 
 from django.contrib import admin
 

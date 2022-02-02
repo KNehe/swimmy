@@ -1,0 +1,90 @@
+[
+{
+    "model": "pools.pool",
+    "pk": 1,
+    "fields": {
+        "name": "King Fishers Fake 5",
+        "location": "Naboa Road Mbale",
+        "day_price": "42.0",
+        "thumbnail_url": null,
+        "image_url": null,
+        "width": "2.0",
+        "length": "12.0",
+        "depth_shallow_end": "1.0",
+        "depth_deep_end": "4.0",
+        "maximum_people": 15,
+        "slug": "king-fishers-fake-5",
+        "created_by": 1,
+        "created_at": "2022-01-29T15:33:36.198Z",
+        "updated_by": null,
+        "updated_at": null
+    }
+},
+{
+    "model": "pools.pool",
+    "pk": 2,
+    "fields": {
+        "name": "King Fishers Fake 1",
+        "location": "Naboa Road Mbale",
+        "day_price": "42.0",
+        "thumbnail_url": null,
+        "image_url": null,
+        "width": "2.0",
+        "length": "12.0",
+        "depth_shallow_end": "1.0",
+        "depth_deep_end": "4.0",
+        "maximum_people": 15,
+        "slug": "king-fishers-fake-1",
+        "created_by": 1,
+        "created_at": "2022-01-29T15:35:09.810Z",
+        "updated_by": null,
+        "updated_at": null
+    }
+},
+{
+    "model": "pools.fileupload",
+    "pk": 1,
+    "fields": {
+        "file_name": "screenshot 3",
+        "file": "media/Screenshot_3.png",
+        "uploaded_by": null,
+        "uploaded_at": "2022-01-29T15:37:07.602Z"
+    }
+},
+{
+    "model": "customuser.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$260000$o19RZmChXOnl9SiIw3JPRd$tyoCXnwgTHs5u0oPUoe/MDciwNs3eHsAwUt2kDFOD/8=",
+        "last_login": "2022-01-29T15:33:10.855Z",
+        "is_superuser": true,
+        "username": "Nehe",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2022-01-29T15:32:49.631Z",
+        "email": "kamolunehemiah@gmail.com",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "customuser.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$260000$LBgRSydwhoADImYHsDtVmV$Cv7Q9LzkJ4WFkXWPd/1BtuaBGhVdyCpNOIiSs70PJnY=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "Doe4",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-01-29T15:34:50.291Z",
+        "email": "kamolunehemiah4@gmail.com",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
