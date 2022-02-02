@@ -2,8 +2,18 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Avg
+from django.contrib.auth.models import AbstractUser
 
-from customuser.models import User
+
+class User(AbstractUser):
+    """ Re-define django's User model """
+    email = models.EmailField(unique=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', ]
+
+    def __str__(self) -> str:
+        return self.username
 
 
 class Pool(models.Model):
