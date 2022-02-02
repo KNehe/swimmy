@@ -42,7 +42,7 @@ class Pool(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.generate_slug()
         super().save(*args, **kwargs)
 
     @property
@@ -50,6 +50,9 @@ class Pool(models.Model):
         if hasattr(self, '_average_value'):
             return self._average_value
         return self.rating.aggregate(Avg('value'))['value__avg']
+
+    def generate_slug(self):
+        self.slug = slugify(self.name)
 
 
 class Booking(models.Model):
@@ -78,11 +81,17 @@ class Booking(models.Model):
         return f'Booked by {self.user}'
 
     def save(self, *args, **kwargs):
+        self.calculate_total()
+        self.generate_slug()
+        super().save(*args, **kwargs)
+
+    def calculate_total(self):
         number_of_days = (self.end_datetime - self.start_datetime).days
         self.total_amount = number_of_days * self.pool.day_price\
             if number_of_days > 0 else self.pool.day_price
+
+    def generate_slug(self):
         self.slug = slugify(f'{self.pool} booked by {self.user}')
-        super().save(*args, **kwargs)
 
 
 class Rating(models.Model):
@@ -105,8 +114,11 @@ class Rating(models.Model):
         return f'Rated by: {self.user}'
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(f'{self.pool} rated by {self.user}')
+        self.generate_slug()
         super().save(*args, **kwargs)
+
+    def generate_slug(self):
+        self.slug = slugify(f'{self.pool} rated by {self.user}')
 
 
 class FileUpload(models.Model):
