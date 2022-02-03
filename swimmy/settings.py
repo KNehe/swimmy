@@ -47,8 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'restful.apps.RestfulConfig',
-    'customuser.apps.CustomuserConfig',
+    'pools.apps.PoolsConfig',
     'rest_framework_simplejwt',
     'drf_yasg',
     'corsheaders'
@@ -155,7 +154,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'customuser.User'
+AUTH_USER_MODEL = 'pools.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

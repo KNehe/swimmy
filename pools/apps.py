@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CustomuserConfig(AppConfig):
+class PoolsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'customuser'
+    name = 'pools'
