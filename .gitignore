@@ -16,3 +16,6 @@ swimmy_env
 
 # Db
 db.sqlite3
+
+# Docker
+data
