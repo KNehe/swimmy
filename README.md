@@ -44,10 +44,28 @@ DB_PORT=
 - Add all your client app origins
 ```
 CORS_ALLOWED_ORIGINS= e.g CORS_ALLOWED_ORIGINS=http://localhost:3000,http://yourdomain.com
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 anotherhost
 ```
 - Create a [virtual environment](https://docs.python.org/3/library/venv.html) and activate it
 - Run `pip install -r requirements.txt`
+- Run `python manage.py migrate`
+- Insert some initial data for swimming pools in db
+- Run `python manage.py loaddata dump`
 - Run `python manage.py runserver`
+- Visit `http://127.0.0.1:8000/api/v1/pools/` in your browser
+
+## Docker
+- Prep `.env` as described above
+- Run  `docker compose build`
+- Run  `docker compose up`
+- You can now check the server `running at http://0.0.0.0:8000/`
+### Apply migrations
+- Run `docker ps` and get container id of web
+- Run `docker exec -t -i <container_id> bash`
+- Run `python manage.py migrate`
+- Insert some initial data for swimming pools in db
+- Run `python manage.py loaddata dump`
+- Visit `http://127.0.0.1:8000/api/v1/pools/` in your browser
 
 ## Documentation
 - Read the docs at `http://127.0.0.1:8000/api/v1/swagger/`
@@ -69,4 +87,4 @@ or
 - Password reset request and confirmation
 - Swagger and Redoc documentation
 
-***NOTE***: Payments for a booking are made on the frontend through a Payment Gateway like [PayPal](https://developer.paypal.com/).On success, the required payload is sent to the appropiate API endpoint.
+***NOTE***: Payments for a booking are made on the frontend through a Payment Gateway like [PayPal](https://developer.paypal.com/).On success, the required payload is sent to the appropiate API endpoint. 
