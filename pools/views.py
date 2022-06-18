@@ -17,6 +17,7 @@ from pools.helpers import (
     generate_reset_password_confirm_response,
     generate_reset_password_request_response,
     generate_user_ratings_response,
+    send_registration_email,
 )
 
 from pools.models import Booking, FileUpload, Pool, Rating, User
@@ -46,7 +47,11 @@ class RegisterAPIView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
+
         token = create_token_for_new_user(response.data.get("id"))
+
+        # Uses celery
+        send_registration_email(response.data.get("id"))
 
         return Response(
             {

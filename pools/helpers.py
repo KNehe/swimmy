@@ -19,7 +19,10 @@ from pools.success_messages import (
     PASSWORD_CHANGED_SUCCESS,
     REQUEST_PASSWORD_RESET_MESSAGE,
     REQUEST_PASSWORD_RESET_SUBJECT,
+    USER_REGISTRATION_EMAIL_BODY,
+    USER_REGISTRATION_EMAIL_SUBJECT,
 )
+from .celery_tasks import send_mail_task
 
 
 def create_token_for_new_user(id):
@@ -29,6 +32,17 @@ def create_token_for_new_user(id):
     user.save()
     token = RefreshToken.for_user(user)
     return token
+
+
+def send_registration_email(user_id: int) -> None:
+    user = User.objects.get(id=user_id)
+
+    send_mail_task.delay(
+        USER_REGISTRATION_EMAIL_SUBJECT,
+        USER_REGISTRATION_EMAIL_BODY,
+        settings.FROM_EMAIL,
+        [user.email],
+    )
 
 
 def modify_token_obtain_pair_serializer_data(data, self_object):
