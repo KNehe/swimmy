@@ -38,6 +38,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -200,3 +201,10 @@ SWAGGER_SETTINGS = {
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(",")
 
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Swimmy API",
+    "site_header": "Welcome Admin",
+    "welcome_sign": "Welcome to the Swimmy API Admin site",
+    "site_brand": "Swimmy",
+}
