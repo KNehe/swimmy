@@ -39,6 +39,13 @@ jobs:
       matrix:
         python-version: [3.9]
     services:
+      rabbitmq:
+        image: rabbitmq:3.8
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672:5672
       postgres:
         image: postgres:latest
         env:
@@ -64,3 +71,6 @@ jobs:
       - name: Run Tests
         run: |
           python manage.py test
+        env:
+          RABBITMQ_HOST: 127.0.0.1
+          RABBITMQ_PORT: ${{ job.services.rabbitmq.ports[5672] }}
