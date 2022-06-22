@@ -1,5 +1,9 @@
-from pools.errors import INVALID_REQUEST_ERROR,\
-    INVALID_RESET_LINK, REQUEST_PASSWORD_RESET_ERROR, UNKOWN_USER_ERROR
+from pools.errors import (
+    INVALID_REQUEST_ERROR,
+    INVALID_RESET_LINK,
+    REQUEST_PASSWORD_RESET_ERROR,
+    UNKOWN_USER_ERROR,
+)
 from pools.models import User, Booking, Rating
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
@@ -11,8 +15,14 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
 
-from pools.success_messages import PASSWORD_CHANGED_SUCCESS,\
-    REQUEST_PASSWORD_RESET_MESSAGE, REQUEST_PASSWORD_RESET_SUBJECT
+from pools.success_messages import (
+    PASSWORD_CHANGED_SUCCESS,
+    REQUEST_PASSWORD_RESET_MESSAGE,
+    REQUEST_PASSWORD_RESET_SUBJECT,
+    USER_REGISTRATION_EMAIL_BODY,
+    USER_REGISTRATION_EMAIL_SUBJECT,
+)
+from .celery_tasks import send_mail_task
 
 
 def create_token_for_new_user(id):
@@ -24,22 +34,33 @@ def create_token_for_new_user(id):
     return token
 
 
+def send_registration_email(user_id: int) -> None:
+    user = User.objects.get(id=user_id)
+
+    send_mail_task.delay(
+        USER_REGISTRATION_EMAIL_SUBJECT,
+        USER_REGISTRATION_EMAIL_BODY,
+        settings.FROM_EMAIL,
+        [user.email],
+    )
+
+
 def modify_token_obtain_pair_serializer_data(data, self_object):
     refresh = self_object.get_token(self_object.user)
-    data['status'] = status.HTTP_200_OK
-    data['message'] = 'Request successfull'
-    data['refresh'] = str(refresh)
-    data['access'] = str(refresh.access_token)
-    data['user'] = {'username': self_object.user.username,
-                    'email': self_object.user.email,
-                    'id': self_object.user.id,
-                    }
+    data["status"] = status.HTTP_200_OK
+    data["message"] = "Request successfull"
+    data["refresh"] = str(refresh)
+    data["access"] = str(refresh.access_token)
+    data["user"] = {
+        "username": self_object.user.username,
+        "email": self_object.user.email,
+        "id": self_object.user.id,
+    }
     return data
 
 
 def generate_recent_bookings_response(request, self_object):
-    recent_bookings = Booking.objects.filter(user=request.user)\
-        .order_by('-created_at')
+    recent_bookings = Booking.objects.filter(user=request.user).order_by("-created_at")
 
     page = self_object.paginate_queryset(recent_bookings)
 
@@ -53,8 +74,7 @@ def generate_recent_bookings_response(request, self_object):
 
 
 def generate_user_ratings_response(request, self_object):
-    user_ratings = Rating.objects.filter(user=request.user)\
-        .order_by('-created_at')
+    user_ratings = Rating.objects.filter(user=request.user).order_by("-created_at")
 
     page = self_object.paginate_queryset(user_ratings)
     if page is not None:
@@ -72,30 +92,31 @@ def generate_reset_password_request_response(email):
 
     token = PasswordResetTokenGenerator().make_token(user)
 
-    reset_link = f'{settings.FRONTEND_URL}/{uidb64}/{token}/'
+    reset_link = f"{settings.FRONTEND_URL}/{uidb64}/{token}/"
     print(reset_link)
-    body = 'Please use the link below to reset your password \n' + \
-           f'{reset_link} \n' + \
-           'If you did not request this, please ignore this email'
+    body = (
+        "Please use the link below to reset your password \n"
+        + f"{reset_link} \n"
+        + "If you did not request this, please ignore this email"
+    )
 
     try:
-        send_mail(REQUEST_PASSWORD_RESET_SUBJECT,
-                  body, settings.FROM_EMAIL, [email])
+        send_mail(REQUEST_PASSWORD_RESET_SUBJECT, body, settings.FROM_EMAIL, [email])
     except Exception as e:
-        print(f'{REQUEST_PASSWORD_RESET_ERROR}: {e}')
-        return Response(REQUEST_PASSWORD_RESET_ERROR,
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print(f"{REQUEST_PASSWORD_RESET_ERROR}: {e}")
+        return Response(
+            REQUEST_PASSWORD_RESET_ERROR, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
     return Response(REQUEST_PASSWORD_RESET_MESSAGE, status=status.HTTP_200_OK)
 
 
 def generate_reset_password_confirm_response(serializer, **kwargs):
-    uidb64 = kwargs.get('uidb64')
-    token = kwargs.get('token')
+    uidb64 = kwargs.get("uidb64")
+    token = kwargs.get("token")
 
     if not uidb64 or not token:
-        return Response(INVALID_REQUEST_ERROR,
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(INVALID_REQUEST_ERROR, status=status.HTTP_400_BAD_REQUEST)
 
     uid = urlsafe_base64_decode(uidb64)
 
@@ -106,10 +127,9 @@ def generate_reset_password_confirm_response(serializer, **kwargs):
     is_token_valid = PasswordResetTokenGenerator().check_token(user[0], token)
 
     if not is_token_valid:
-        return Response(INVALID_RESET_LINK,
-                        status=status.HTTP_401_UNAUTHORIZED)
+        return Response(INVALID_RESET_LINK, status=status.HTTP_401_UNAUTHORIZED)
 
-    new_password = serializer.data.get('new_password')
+    new_password = serializer.data.get("new_password")
     user[0].set_password(new_password)
     user[0].save()
 

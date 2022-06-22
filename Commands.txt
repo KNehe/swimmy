@@ -1,0 +1,3 @@
+# Run Celery
+[Windows OS]
+celery -A swimmy worker -l info --pool=solo

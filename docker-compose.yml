@@ -1,8 +1,39 @@
-version: "3.9"
+version: "3.8"
    
 services:
+  django:
+    build: .
+    container_name: swimmy_django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/pools/
+    ports:
+      - "8000:8000"
+    env_file:
+      ./.env
+    environment:
+      - DB_NAME_DEV=postgres
+      - DB_USERNAME=postgres
+      - DB_USER_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DEBUG=0
+    depends_on:
+      - db
+
+  rabbitmq3:
+    image: rabbitmq:3-management-alpine
+    container_name: swimmy_rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./data/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./data/rabbitmq/log/:/var/log/rabbitmq
+
   db:
     image: postgres
+    container_name: swimmy_postgres
     ports:
       - "5432:5432"
     volumes:
@@ -14,20 +45,15 @@ services:
       - DB_HOST=127.0.0.1
       - DB_PORT=5432
 
-  web:
+  celery:
+    container_name: swimmy_celery
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: celery -A swimmy worker -l INFO
     volumes:
-      - .:/code
-    ports:
-      - "8000:8000"
-    env_file:
-      ./.env
+      - .:/usr/src/pools/
     environment:
-      - DB_NAME_DEV=postgres
-      - DB_USERNAME=postgres
-      - DB_USER_PASSWORD=postgres
-      - DB_HOST=db
-      - DB_PORT=5432
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq3:5672/
+      - DEBUG=0
     depends_on:
-      - db
+      - django
+      - rabbitmq3

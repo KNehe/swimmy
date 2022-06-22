@@ -13,7 +13,7 @@ class AverageRatingTest(TestCase):
         Should calculate correct average rating of a pool
         """
         user_1 = create_test_user()
-        user_2 = create_test_user(email='doe@gmail.com')
+        user_2 = create_test_user(email="doe@gmail.com")
 
         pool = create_test_pool(user=user_1)
 
@@ -30,16 +30,16 @@ class BookingTest(TestCase):
         the number of days (difference between startdateime and enddatetime)
         is greater than 0
         """
-        user = create_test_user(email='doe2@gmail.com')
+        user = create_test_user(email="doe2@gmail.com")
 
         # pool's day_price=10.0
         pool = create_test_pool(user=user)
         start = timezone.now()
         end = timezone.now() + timedelta(days=2)
 
-        booking = Booking.objects.create(user=user, pool=pool,
-                                         start_datetime=start,
-                                         end_datetime=end)
+        booking = Booking.objects.create(
+            user=user, pool=pool, start_datetime=start, end_datetime=end
+        )
         expected_amount = (end - start).days * pool.day_price
         self.assertEqual(booking.total_amount, expected_amount)
 
@@ -49,16 +49,16 @@ class BookingTest(TestCase):
         the start and end day is the same
         Total amount should equal a pool day price
         """
-        user = create_test_user(email='doe3@gmail.com')
+        user = create_test_user(email="doe3@gmail.com")
 
         # pool's day_price=10.0
         pool = create_test_pool(user=user)
         start = timezone.now()
         end = timezone.now() + timedelta(hours=4)
 
-        booking = Booking.objects.create(user=user, pool=pool,
-                                         start_datetime=start,
-                                         end_datetime=end)
+        booking = Booking.objects.create(
+            user=user, pool=pool, start_datetime=start, end_datetime=end
+        )
         self.assertEqual(booking.total_amount, pool.day_price)
 
 
